@@ -37,4 +37,28 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil ditambahkan!');
     }
+
+    public function edit($id)
+    {
+        $customer = Customer::findOrFail($id);
+        return view('customers.edit', compact('customer'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:customers,email,' . $id,
+            'phone' => 'nullable|string|max:15',
+        ]);
+
+        $customer = Customer::findOrFail($id);
+        $customer->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->route('customers.index')->with('success', 'Data pelanggan berhasil diperbarui!');
+    }
 }
